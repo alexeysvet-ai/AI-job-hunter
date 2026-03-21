@@ -34,10 +34,18 @@ from aiohttp import web
 from aiogram.types import Update
 
 async def handle_webhook(request):
-    data = await request.json()
-    update = Update.model_validate(data)
-    await dp.feed_update(bot, update)
-    return web.Response(text="OK")
+    try:
+        data = await request.json()
+        print("RAW UPDATE:", data)
+
+        update = Update.model_validate(data)
+        await dp.feed_update(bot, update)
+
+        return web.Response(text="OK")
+
+    except Exception as e:
+        print("ERROR:", e)
+        return web.Response(text="ERROR", status=500)
 
 def main():
     app = web.Application(middlewares=[log_middleware])
