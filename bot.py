@@ -30,14 +30,20 @@ async def on_startup(app):
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_webhook(WEBHOOK_URL)
 
+from aiohttp import web
+from aiogram.types import Update
+
+async def handle_webhook(request):
+    data = await request.json()
+    update = Update.model_validate(data)
+    await dp.feed_update(bot, update)
+    return web.Response(text="OK")
+
 def main():
     app = web.Application(middlewares=[log_middleware])
+    app.router.add_post("/webhook", handle_webhook)
     app.on_startup.append(on_startup)
-
-    from aiogram.webhook.aiohttp_server import SimpleRequestHandler
-    handler = SimpleRequestHandler(dispatcher=dp, bot=bot)
-    handler.register(app, path=WEBHOOK_PATH)
-
+    
     port = int(os.getenv("PORT", 8000))
     web.run_app(app, host="0.0.0.0", port=port)
 
