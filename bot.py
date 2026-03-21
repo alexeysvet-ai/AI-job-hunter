@@ -4,7 +4,7 @@ from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
-TOKEN = МОЙ ТОКЕН
+TOKEN = "8754421373:AAEoHSSZ8hOzaZ6gPORKLx4p0K5TyAWMoys"
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"https://ai-job-hunter-production-cc90.up.railway.app/webhook"
 
