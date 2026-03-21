@@ -4,13 +4,13 @@ from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
-TOKEN = "8754421373:AAEoHSSZ8hOzaZ6gPORKLx4p0K5TyAWMoys"
+TOKEN = МОЙ ТОКЕН
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"https://ai-job-hunter-production-cc90.up.railway.app/webhook"
 
 bot = Bot(token=TOKEN)
 print("WEBHOOK URL:", WEBHOOK_URL)
-print("TOKEN:", TOKEN)
+
 dp = Dispatcher()
 
 @dp.message(Command("start"))
@@ -22,12 +22,13 @@ async def echo(message: types.Message):
     await message.answer("Ты написал: " + message.text)
 
 async def on_startup(app):
+    await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_webhook(WEBHOOK_URL)
 
 async def on_shutdown(app):
     await bot.delete_webhook()
 
-async def main():
+def main():
     app = web.Application()
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
