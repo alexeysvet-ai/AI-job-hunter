@@ -30,9 +30,6 @@ async def on_startup(app):
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_webhook(WEBHOOK_URL)
 
-async def on_shutdown(app):
-    await bot.delete_webhook()
-
 def main():
     app = web.Application(middlewares=[log_middleware])
     app.on_startup.append(on_startup)
