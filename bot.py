@@ -9,6 +9,7 @@ WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"https://{"ai-job-hunter-production-cc90.up.railway.app"}{WEBHOOK_PATH}"
 
 bot = Bot(token=TOKEN)
+print("WEBHOOK URL:", WEBHOOK_URL)
 print("TOKEN:", TOKEN)
 dp = Dispatcher()
 
@@ -40,4 +41,4 @@ async def main():
     web.run_app(app, host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
