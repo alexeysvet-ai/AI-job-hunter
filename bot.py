@@ -27,8 +27,14 @@ async def echo(message: types.Message):
     await message.answer("Ты написал: " + message.text)
 
 async def on_startup(app):
-    await bot.delete_webhook(drop_pending_updates=True)
-    await bot.set_webhook(WEBHOOK_URL)
+    info = await bot.get_webhook_info()
+
+    if info.url != WEBHOOK_URL:
+        print("Setting webhook...")
+        await bot.delete_webhook(drop_pending_updates=True)
+        await bot.set_webhook(WEBHOOK_URL)
+    else:
+        print("Webhook already set")
 
 from aiohttp import web
 from aiogram.types import Update
