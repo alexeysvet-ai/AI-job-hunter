@@ -6,7 +6,7 @@ from aiogram.filters import Command
 
 TOKEN = "8754421373:AAEoHSSZ8hOzaZ6gPORKLx4p0K5TyAWMoys"
 WEBHOOK_PATH = "/webhook"
-WEBHOOK_URL = f"https://{"ai-job-hunter-production-cc90.up.railway.app"}{WEBHOOK_PATH}"
+WEBHOOK_URL = f"https://ai-job-hunter-production-cc90.up.railway.app"
 
 bot = Bot(token=TOKEN)
 print("WEBHOOK URL:", WEBHOOK_URL)
