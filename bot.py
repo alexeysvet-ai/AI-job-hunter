@@ -33,7 +33,6 @@ async def on_startup(app):
 def main():
     app = web.Application(middlewares=[log_middleware])
     app.on_startup.append(on_startup)
-    app.on_shutdown.append(on_shutdown)
 
     from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
