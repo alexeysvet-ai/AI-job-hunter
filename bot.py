@@ -4,6 +4,11 @@ from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
+@web.middleware
+async def log_middleware(request, handler):
+    print("REQUEST:", request.method, request.path)
+    return await handler(request)
+
 TOKEN = "8754421373:AAEoHSSZ8hOzaZ6gPORKLx4p0K5TyAWMoys"
 WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"https://ai-job-hunter-production-cc90.up.railway.app/webhook"
@@ -29,7 +34,7 @@ async def on_shutdown(app):
     await bot.delete_webhook()
 
 def main():
-    app = web.Application()
+    app = web.Application(middlewares=[log_middleware])
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
 
