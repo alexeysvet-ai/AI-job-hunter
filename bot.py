@@ -9,7 +9,7 @@ WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"https://{"ai-job-hunter-production-cc90.up.railway.app"}{WEBHOOK_PATH}"
 
 bot = Bot(token=TOKEN)
-print("TOKEN:", os.getenv("BOT_TOKEN"))
+print("TOKEN:", TOKEN)
 dp = Dispatcher()
 
 @dp.message(Command("start"))
