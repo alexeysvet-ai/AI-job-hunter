@@ -9,6 +9,7 @@ WEBHOOK_PATH = "/webhook"
 WEBHOOK_URL = f"https://{os.getenv('RAILWAY_STATIC_URL')}{WEBHOOK_PATH}"
 
 bot = Bot(token=TOKEN)
+print("TOKEN:", os.getenv("BOT_TOKEN"))
 dp = Dispatcher()
 
 @dp.message(Command("start"))
