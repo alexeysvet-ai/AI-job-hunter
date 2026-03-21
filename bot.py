@@ -34,10 +34,9 @@ def main():
     app = web.Application(middlewares=[log_middleware])
     app.on_startup.append(on_startup)
 
-    from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
-
-    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
-    setup_application(app, dp, bot=bot)
+    from aiogram.webhook.aiohttp_server import SimpleRequestHandler
+    handler = SimpleRequestHandler(dispatcher=dp, bot=bot)
+    handler.register(app, path=WEBHOOK_PATH)
 
     port = int(os.getenv("PORT", 8000))
     web.run_app(app, host="0.0.0.0", port=port)
