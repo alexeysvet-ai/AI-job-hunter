@@ -4,9 +4,9 @@ from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = "8754421373:AAEoHSSZ8hOzaZ6gPORKLx4p0K5TyAWMoys"
 WEBHOOK_PATH = "/webhook"
-WEBHOOK_URL = f"https://{os.getenv('RAILWAY_STATIC_URL')}{WEBHOOK_PATH}"
+WEBHOOK_URL = f"https://{"ai-job-hunter-production-cc90.up.railway.app"}{WEBHOOK_PATH}"
 
 bot = Bot(token=TOKEN)
 print("TOKEN:", os.getenv("BOT_TOKEN"))
