@@ -1,3 +1,12 @@
+import os
+import asyncio
+import socket
+from aiohttp import web
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
+
+TOKEN = "8754421373:AAEEvOvnyV1GFOPd4YaQINc-PfvwlWfHPT8"
+
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
