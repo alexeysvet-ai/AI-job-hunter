@@ -2,7 +2,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
-TOKEN = "8754421373:AAEoHSSZ8hOzaZ6gPORKLx4p0K5TyAWMoys"
+TOKEN = "8754421373:AAEEvOvnyV1GFOPd4YaQINc-PfvwlWfHPT8"
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
