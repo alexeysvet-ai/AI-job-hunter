@@ -1,15 +1,19 @@
 import os
 import asyncio
-import socket
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 TOKEN = "8754421373:AAEEvOvnyV1GFOPd4YaQINc-PfvwlWfHPT8"
+BASE_URL = "https://ai-job-hunter-69q8.onrender.com"
+WEBHOOK_PATH = "/webhook"
+WEBHOOK_URL = f"{BASE_URL}{WEBHOOK_PATH}"
+
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# --- Telegram handlers ---
+# --- Handlers ---
 
 @dp.message(Command("start"))
 async def start(message: types.Message):
@@ -20,64 +24,39 @@ async def echo(message: types.Message):
     text = message.text or "не текстовое сообщение"
     await message.answer("Ты написал: " + text)
 
-# --- Atomic lock (без race condition) ---
+# --- Startup / Shutdown ---
 
-LOCK_FILE = "/tmp/bot.lock"
+async def on_startup(app):
+    print("Setting webhook:", WEBHOOK_URL)
+    await bot.set_webhook(WEBHOOK_URL)
 
-def acquire_lock():
-    try:
-        fd = os.open(LOCK_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        with os.fdopen(fd, "w") as f:
-            f.write(str(os.getpid()))
-        return True
-    except OSError as e:
-        if e.errno == errno.EEXIST:
-            print("Lock already exists, skipping polling")
-            return False
-        raise
+async def on_shutdown(app):
+    print("Deleting webhook")
+    await bot.delete_webhook()
 
-# --- Bot runner (с авто-восстановлением) ---
+# --- Main app ---
 
-async def start_bot():
-    if not acquire_lock():
-        return
-
-    while True:
-        try:
-            await bot.delete_webhook(drop_pending_updates=True)
-            print("Bot started...")
-            await dp.start_polling(bot)
-
-        except Exception as e:
-            print("Bot crashed:", e)
-            print("Restarting in 5 seconds...")
-            await asyncio.sleep(5)
-
-# --- HTTP сервер для Render ---
-
-async def handle(request):
-    return web.Response(text="OK")
-
-async def start_web():
+def create_app():
     app = web.Application()
-    app.router.add_get("/", handle)
 
-    runner = web.AppRunner(app)
-    await runner.setup()
+    app.on_startup.append(on_startup)
+    app.on_shutdown.append(on_shutdown)
 
-    port = int(os.getenv("PORT", 10000))
-    print("Starting web server on port:", port)
+    SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=WEBHOOK_PATH)
+    setup_application(app, dp, bot=bot)
 
-    site = web.TCPSite(runner, "0.0.0.0", port)
-    await site.start()
+    # health check
+    async def health(request):
+        return web.Response(text="OK")
 
-# --- Main ---
+    app.router.add_get("/", health)
 
-async def main():
-    await asyncio.gather(
-        start_bot(),
-        start_web()
-    )
+    return app
+
+# --- Run ---
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    port = int(os.getenv("PORT", 10000))
+    app = create_app()
+    print(f"Starting webhook server on port {port}")
+    web.run_app(app, host="0.0.0.0", port=port)
