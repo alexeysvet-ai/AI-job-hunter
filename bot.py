@@ -31,9 +31,6 @@ def is_main_process():
 # --- Запуск бота ---
 
 async def start_bot():
-    if not is_main_process():
-        print("Skipping polling in this process")
-        return
 
     await bot.delete_webhook(drop_pending_updates=True)
     print("Bot started...")
