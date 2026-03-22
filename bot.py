@@ -1,3 +1,4 @@
+import os
 import asyncio
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types
@@ -13,7 +14,8 @@ async def start(message: types.Message):
 
 @dp.message()
 async def echo(message: types.Message):
-    await message.answer("Ты написал: " + message.text)
+    text = message.text or "не текстовое сообщение"
+    await message.answer("Ты написал: " + text)
 
 async def start_bot():
     await bot.delete_webhook(drop_pending_updates=True)
