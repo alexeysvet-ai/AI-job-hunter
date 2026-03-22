@@ -20,38 +20,28 @@ async def echo(message: types.Message):
     text = message.text or "не текстовое сообщение"
     await message.answer("Ты написал: " + text)
 
-# --- Lock-файл для одного процесса ---
+# --- Atomic lock (без race condition) ---
 
 LOCK_FILE = "/tmp/bot.lock"
 
-def is_process_alive(pid):
+def acquire_lock():
     try:
-        os.kill(pid, 0)
+        fd = os.open(LOCK_FILE, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        with os.fdopen(fd, "w") as f:
+            f.write(str(os.getpid()))
         return True
-    except:
-        return False
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            print("Lock already exists, skipping polling")
+            return False
+        raise
 
-# --- Запуск бота с авто-восстановлением ---
+# --- Bot runner (с авто-восстановлением) ---
 
 async def start_bot():
-    # --- LOCK ---
-    if os.path.exists(LOCK_FILE):
-        try:
-            with open(LOCK_FILE, "r") as f:
-                pid = int(f.read())
+    if not acquire_lock():
+        return
 
-            if is_process_alive(pid):
-                print("Another live instance found, skipping polling")
-                return
-            else:
-                print("Stale lock detected, overriding")
-        except:
-            print("Corrupted lock file, overriding")
-
-    with open(LOCK_FILE, "w") as f:
-        f.write(str(os.getpid()))
-
-    # --- AUTO-RESTART LOOP ---
     while True:
         try:
             await bot.delete_webhook(drop_pending_updates=True)
